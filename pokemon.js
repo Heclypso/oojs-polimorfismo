@@ -16,7 +16,18 @@ function Pokemon(especie, tipo, vida, forteContra, fracoContra, habilidade) { //
 }
 
 function Digimon (especie, tipo, vida, forteContra, fracoContra, habilidade, digiEvolucao) { // função construtora da classe Digimon recebendo herança
-    this.digiEvolucao = digiEvolucao;
+    // this.digiEvolucao = digiEvolucao;
+    let _digiEvolucao = digiEvolucao; // para tornar um atributo privado não podemos utilizar o this, armazenamos o atributo em uma variavel e nomeamos ele por convenção com _nome
+
+    this.getDigiEvolução = function() { // por convenção recebe get (recuperação)
+        return `A digievolução de ${this.especie} é ${_digiEvolucao}`
+    }
+
+    this.setDigiEvolução = function(valor) { // por convenção recebe set (definição)
+        if (typeof valor === 'string') {
+            _digiEvolucao = valor;
+        }
+    }
     
     Pokemon.call(this, especie, tipo, vida, forteContra, fracoContra, habilidade); // herança da classe Pokemon
 }
@@ -29,14 +40,14 @@ pikachu.ataque(); // pikachu atacou
 agumon.ataque(); // agumon atacou
 
 pikachu.dizDigiEvolucao(); // undefined por que o pikachu não tem digievolucao
-agumon.dizDigiEvolucao(); // greymon
+agumon.dizDigiEvolucao(); // não vai mais retornar greymon porque o valor foi armazenado em uma variavel.
 
-console.log(typeof Pokemon) // retorna function
+// agumon.digiEvolucao = "2" // aqui temos um problema de encapsulamento porque deixamos o atributo digiEvolucao público assim qualquer um pode acessar e modificar ele para qualquer tipo.
+console.log(agumon.digiEvolucao) // a partir do momento em que a digievolução é armazenada em uma variavel ela não é mais acessível através da notação ponto
 
-console.log(typeof pikachu) // retorna object
-console.log(typeof itens) // retorna objeto por que usando typeof temos o retorno de object tanto para arrays quanto para objetos instanciados por isso para esse tipo de verificação usamos instanceof
+console.log(agumon.getDigiEvolução())
 
-console.log(pikachu instanceof Pokemon) // retorna true
-console.log(agumon instanceof Pokemon) // retorna false
-console.log(itens instanceof Pokemon) // retorna false
-console.log(itens instanceof Array) // retorna true
+agumon.setDigiEvolução("Wargreymon");
+agumon.setDigiEvolução(2); // agora não é mais possível modificar para qualquer tipo pois foi colocado um if antes do setter
+
+console.log(agumon.getDigiEvolução())
