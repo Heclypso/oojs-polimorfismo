@@ -1,7 +1,7 @@
-function Pokemon(especie, tipo, vida, forteContra, fracoContra, habilidade) { // função construtora da classe Pokemon
+function Pokemon(especie, tipo, hp, forteContra, fracoContra, habilidade) { // função construtora da classe Pokemon
     this.especie = especie;
     this.tipo = tipo;
-    this.vida = vida;
+    this.hp = hp;
     this.forteContra = forteContra;
     this.fracoContra = fracoContra;
     this.habilidade = habilidade;
@@ -15,12 +15,17 @@ function Pokemon(especie, tipo, vida, forteContra, fracoContra, habilidade) { //
     }
 }
 
-function Digimon (especie, tipo, vida, forteContra, fracoContra, habilidade, digiEvolucao) { // função construtora da classe Digimon recebendo herança
+function Digimon (especie, tipo, hp, forteContra, fracoContra, habilidade, digiEvolucao) { // função construtora da classe Digimon recebendo herança
     // this.digiEvolucao = digiEvolucao;
     let _digiEvolucao = digiEvolucao; // para tornar um atributo privado não podemos utilizar o this, armazenamos o atributo em uma variavel e nomeamos ele por convenção com _nome
+    let _hp = hp;
 
     this.getDigiEvolução = function() { // por convenção recebe get (recuperação)
         return `A digievolução de ${this.especie} é ${_digiEvolucao}`
+    }
+
+    this.getHp = function() { // por convenção recebe get (recuperação)
+        return _hp;
     }
 
     this.setDigiEvolução = function(valor) { // por convenção recebe set (definição)
@@ -28,26 +33,48 @@ function Digimon (especie, tipo, vida, forteContra, fracoContra, habilidade, dig
             _digiEvolucao = valor;
         }
     }
+
+    this.setHp = function(valor) { // por convenção recebe set (definição)
+        if (typeof valor === 'number') {
+            _hp = valor;
+        }
+    }
+
+    this.hpBuff = function() { // polimorfismo, o metodo executa diferentes buffs de acordo com o tipo
+        const novoHp = _hp  * 1.1;
+        _hp = novoHp;
+    }
     
-    Pokemon.call(this, especie, tipo, vida, forteContra, fracoContra, habilidade); // herança da classe Pokemon
+    Pokemon.call(this, especie, tipo, hp, forteContra, fracoContra, habilidade); // herança da classe Pokemon
 }
 
-const pikachu = new Pokemon("Pikachu", "Elétrico", "10", "Agua", "Rocha", "Choque do trovão"); // instancia da classe pokemon
-const agumon = new Digimon("Agumon", "Vaccine", "10", "Virus", "Data", "Soco", "Greymon") // instancia da classe digimon
-const itens = ["revive", "pokebola"] // array de itens
+function Virus(especie) { 
+    Digimon.call(this, especie, "Virus", 20, "Data", "Vacine", "Soco", "Greymon"); 
+    
+    this.hpBuff = function() { // polimorfismo, o metodo executa diferentes buffs de acordo com o tipo
+        const novoHp = this.getHp() * 1.2;
+        this.setHp(novoHp)
+    }
+}
 
-pikachu.ataque(); // pikachu atacou
-agumon.ataque(); // agumon atacou
+function Data(especie) { 
+    Digimon.call(this, especie, "Data", 30, "Vacine", "Virus", "Soco", "Greymon"); 
+    
+    this.hpBuff = function() { // polimorfismo, o metodo executa diferentes buffs de acordo com o tipo
+        const novoHp = this.getHp() * 1.3;
+        this.setHp(novoHp)
+    }
+}
 
-pikachu.dizDigiEvolucao(); // undefined por que o pikachu não tem digievolucao
-agumon.dizDigiEvolucao(); // não vai mais retornar greymon porque o valor foi armazenado em uma variavel.
+const agumon = new Digimon("Agumon", "Vaccine", "10", "Virus", "Data", "Soco", "Greymon") 
+const agumon2 = new Virus("Agumon2")
+const agumon3 = new Data("Agumon3")
 
-// agumon.digiEvolucao = "2" // aqui temos um problema de encapsulamento porque deixamos o atributo digiEvolucao público assim qualquer um pode acessar e modificar ele para qualquer tipo.
-console.log(agumon.digiEvolucao) // a partir do momento em que a digievolução é armazenada em uma variavel ela não é mais acessível através da notação ponto
+agumon.hpBuff();
+console.log(agumon.getHp())
 
-console.log(agumon.getDigiEvolução())
+agumon2.hpBuff();
+console.log(agumon2.getHp())
 
-agumon.setDigiEvolução("Wargreymon");
-agumon.setDigiEvolução(2); // agora não é mais possível modificar para qualquer tipo pois foi colocado um if antes do setter
-
-console.log(agumon.getDigiEvolução())
+agumon3.hpBuff();
+console.log(agumon3.getHp())
